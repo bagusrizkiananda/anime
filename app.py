@@ -29,21 +29,22 @@ def recommend(anime_name):
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
     sim_scores = sim_scores[1:6]  # Ambil 5 rekomendasi teratas
     anime_indices = [i[0] for i in sim_scores]
-    return data['name'].iloc[anime_indices]
+    return data.iloc[anime_indices][['name', 'genre']]  # Mengambil nama dan genre
 
 # Streamlit UI
-st.title('Sistem rekomendasi anime yang berdasarkan kemiripan genre')
+st.title('Sistem Rekomendasi Anime Berdasarkan Kemiripan Genre')
 
 menu = ['Home', 'Anime Data', 'Recommendation']
 choice = st.sidebar.selectbox('Menu', menu)
 
 if choice == 'Home':
     st.write("""
-        # irasshaimase.
+        # Irasshaimase!
+        Selamat datang di sistem rekomendasi anime berbasis genre.
     """)
 
 elif choice == 'Anime Data':
-    st.subheader('Data list Anime')
+    st.subheader('Data List Anime')
     st.dataframe(data)
 
 elif choice == 'Recommendation':
@@ -58,5 +59,5 @@ elif choice == 'Recommendation':
             st.write('Anime tidak ditemukan dalam data.')
         else:
             st.write('Recommended Animes:')
-            for anime in recommendations:
-                st.write(f'- {anime}')
+            for idx, row in recommendations.iterrows():
+                st.write(f"- {row['name']} (Genre: {row['genre']})")
