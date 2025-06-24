@@ -39,15 +39,15 @@ choice = st.sidebar.selectbox('Menu', menu)
 
 if choice == 'Home':
     st.write("""
-        irasshaimase.
+        # irasshaimase.
     """)
 
 elif choice == 'Anime Data':
-    st.subheader('Dataset Anime')
+    st.subheader('Data list Anime')
     st.dataframe(data)
 
 elif choice == 'Recommendation':
-    st.subheader('Anime Recommendation')
+    st.subheader('Rekomendasi Anime')
 
     anime_list = data['name'].tolist()
     selected_anime = st.selectbox('Select an Anime', anime_list)
