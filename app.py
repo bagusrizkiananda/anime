@@ -65,7 +65,7 @@ elif choice == '✨ Recommendation':
             for idx, row in recommendations.iterrows():
                 with st.container():
                     st.markdown(f"""
-                    <div style='background-color:#f0f2f6; padding:15px; border-radius:10px; margin-bottom:10px'>
+                    <div style='background-color:#2b2b2b; padding:15px; border-radius:10px; margin-bottom:10px; color:#ffffff;'>
                         <h4 style='margin-bottom:5px;'>{row['name']}</h4>
                         <p style='margin-bottom:5px;'><b>Genre:</b> {row['genre']}</p>
                         <p><b>Rating:</b> {row['rating']}</p>
