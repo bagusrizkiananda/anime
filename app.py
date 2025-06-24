@@ -6,7 +6,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Load dataset
 data = pd.read_csv('anime.csv')
 
-# Preprocessing: Isi NaN pada kolom genre
+# Preprocessing: Pastikan tidak ada NaN di kolom 'genre'
 data['genre'] = data['genre'].fillna('')
 
 # Hitung TF-IDF dari genre
