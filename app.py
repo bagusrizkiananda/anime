@@ -39,7 +39,7 @@ choice = st.sidebar.selectbox('Menu', menu)
 
 if choice == 'Home':
     st.write("""
-        # irasshaimase.
+        irasshaimase.
     """)
 
 elif choice == 'Anime Data':
