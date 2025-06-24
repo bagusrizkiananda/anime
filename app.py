@@ -32,7 +32,7 @@ def recommend(anime_name):
     return data['name'].iloc[anime_indices]
 
 # Streamlit UI
-st.title('Anime Recommendation System (Tanpa Model File)')
+st.title('Sistem rekomdasi anime yang mirip berdasarkan genre')
 
 menu = ['Home', 'Anime Data', 'Recommendation']
 choice = st.sidebar.selectbox('Menu', menu)
