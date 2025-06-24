@@ -51,7 +51,7 @@ elif choice == '📚 Anime Data':
     st.dataframe(data)
 
 elif choice == '✨ Recommendation':
-    st.subheader('✨ Rekomendasi Anime')
+    st.subheader('✨ Rekomendasi Anime Serupa')
 
     anime_list = data['name'].tolist()
     selected_anime = st.selectbox('Select an Anime', anime_list)
