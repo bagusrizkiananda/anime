@@ -1,16 +1,38 @@
 import streamlit as st
 import pandas as pd
-import pickle
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 # Load dataset
 data = pd.read_csv('anime.csv')
 
-# Load model
-with open('anime_model.pkl', 'rb') as file:
-    model = pickle.load(file)
+# Preprocessing: Isi NaN pada kolom genre
+data['genre'] = data['genre'].fillna('')
+
+# Hitung TF-IDF dari genre
+tfidf = TfidfVectorizer(stop_words='english')
+tfidf_matrix = tfidf.fit_transform(data['genre'])
+
+# Hitung cosine similarity antar anime
+cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+
+# Buat indeks nama anime untuk pencarian cepat
+indices = pd.Series(data.index, index=data['name']).drop_duplicates()
+
+# Fungsi rekomendasi
+def recommend(anime_name):
+    if anime_name not in indices:
+        return []
+    
+    idx = indices[anime_name]
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores[1:6]  # Ambil 5 rekomendasi teratas
+    anime_indices = [i[0] for i in sim_scores]
+    return data['name'].iloc[anime_indices]
 
 # Streamlit UI
-st.title('Anime Recommendation System')
+st.title('Anime Recommendation System (Tanpa Model File)')
 
 menu = ['Home', 'Anime Data', 'Recommendation']
 choice = st.sidebar.selectbox('Menu', menu)
@@ -18,7 +40,7 @@ choice = st.sidebar.selectbox('Menu', menu)
 if choice == 'Home':
     st.write("""
         # Welcome to Anime Recommendation System
-        Silakan pilih menu di sebelah kiri untuk menjelajahi data atau mendapatkan rekomendasi.
+        Sistem ini menghitung kemiripan antar anime berdasarkan genre menggunakan TF-IDF dan Cosine Similarity secara real-time.
     """)
 
 elif choice == 'Anime Data':
@@ -28,22 +50,14 @@ elif choice == 'Anime Data':
 elif choice == 'Recommendation':
     st.subheader('Anime Recommendation')
 
-    # Pilih anime untuk referensi
     anime_list = data['name'].tolist()
     selected_anime = st.selectbox('Select an Anime', anime_list)
 
-    # Ambil rekomendasi
-    def recommend(selected_anime):
-        index = data[data['name'] == selected_anime].index[0]
-        distances = model[index]
-        anime_indices = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[1:6]
-        recommended = []
-        for i in anime_indices:
-            recommended.append(data.iloc[i[0]]['name'])
-        return recommended
-
     if st.button('Show Recommendation'):
         recommendations = recommend(selected_anime)
-        st.write('Recommended Animes:')
-        for anime in recommendations:
-            st.write(f'- {anime}')
+        if len(recommendations) == 0:
+            st.write('Anime tidak ditemukan dalam data.')
+        else:
+            st.write('Recommended Animes:')
+            for anime in recommendations:
+                st.write(f'- {anime}')
