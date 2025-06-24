@@ -39,8 +39,7 @@ choice = st.sidebar.selectbox('Menu', menu)
 
 if choice == 'Home':
     st.write("""
-        # Welcome to Anime Recommendation System
-        Sistem ini menghitung kemiripan antar anime berdasarkan genre menggunakan TF-IDF dan Cosine Similarity secara real-time.
+        # irasshaimase.
     """)
 
 elif choice == 'Anime Data':
