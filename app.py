@@ -19,7 +19,7 @@ cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 # Buat indeks nama anime untuk pencarian cepat
 indices = pd.Series(data.index, index=data['name']).drop_duplicates()
 
-# Fungsi rekomendasi
+# Fungsi rekomendasi berdasarkan anime
 def recommend(anime_name):
     if anime_name not in indices:
         return []
@@ -31,11 +31,16 @@ def recommend(anime_name):
     anime_indices = [i[0] for i in sim_scores]
     return data.iloc[anime_indices][['name', 'genre', 'rating']]  # Mengambil nama, genre, rating
 
+# Fungsi pencarian anime berdasarkan genre
+def search_by_genre(genre_keyword):
+    filtered = data[data['genre'].str.contains(genre_keyword, case=False, na=False)]
+    return filtered[['name', 'genre', 'rating']].sort_values(by='rating', ascending=False).head(10)
+
 # Streamlit UI
 st.set_page_config(page_title="Anime Recommender", page_icon="🎌", layout="wide")
 st.title('🎌 Sistem Rekomendasi Anime 🎌')
 
-menu = ['🏠 Home', '📚 Anime Data', '✨ Recommendation']
+menu = ['🏠 Home', '📚 Anime Data', '✨ Recommendation', '🔍 Search by Genre']
 choice = st.sidebar.selectbox('Menu', menu)
 
 if choice == '🏠 Home':
@@ -63,6 +68,26 @@ elif choice == '✨ Recommendation':
         else:
             st.success('Berikut adalah anime rekomendasi untuk kamu:')
             for idx, row in recommendations.iterrows():
+                with st.container():
+                    st.markdown(f"""
+                    <div style='background-color:#2b2b2b; padding:15px; border-radius:10px; margin-bottom:10px; color:#ffffff;'>
+                        <h4 style='margin-bottom:5px;'>{row['name']}</h4>
+                        <p style='margin-bottom:5px;'><b>Genre:</b> {row['genre']}</p>
+                        <p><b>Rating:</b> {row['rating']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+elif choice == '🔍 Search by Genre':
+    st.subheader('🔎 Cari Anime Berdasarkan Genre')
+    genre_input = st.text_input('Masukkan Genre (Contoh: Action, Comedy, Romance)')
+
+    if st.button('Search'):
+        results = search_by_genre(genre_input)
+        if len(results) == 0:
+            st.warning('Tidak ditemukan anime dengan genre tersebut.')
+        else:
+            st.success('Berikut adalah anime dengan genre yang kamu cari:')
+            for idx, row in results.iterrows():
                 with st.container():
                     st.markdown(f"""
                     <div style='background-color:#2b2b2b; padding:15px; border-radius:10px; margin-bottom:10px; color:#ffffff;'>
