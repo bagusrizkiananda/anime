@@ -29,26 +29,29 @@ def recommend(anime_name):
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
     sim_scores = sim_scores[1:6]  # Ambil 5 rekomendasi teratas
     anime_indices = [i[0] for i in sim_scores]
-    return data.iloc[anime_indices][['name', 'genre']]  # Mengambil nama dan genre
+    return data.iloc[anime_indices][['name', 'genre', 'rating']]  # Mengambil nama, genre, rating
 
 # Streamlit UI
-st.title('Sistem Rekomendasi Anime Berdasarkan Kemiripan Genre')
+st.set_page_config(page_title="Anime Recommender", page_icon="🎌", layout="wide")
+st.title('🎌 Sistem Rekomendasi Anime 🎌')
 
-menu = ['Home', 'Anime Data', 'Recommendation']
+menu = ['🏠 Home', '📚 Anime Data', '✨ Recommendation']
 choice = st.sidebar.selectbox('Menu', menu)
 
-if choice == 'Home':
-    st.write("""
-        # Irasshaimase!
-        Selamat datang di sistem rekomendasi anime berbasis genre.
+if choice == '🏠 Home':
+    st.markdown("""
+        ## Irasshaimase! 👋
+        Selamat datang di **Sistem Rekomendasi Anime** berbasis kemiripan genre.
+        
+        > Pilih menu *Recommendation* di sidebar untuk mulai mencari rekomendasi anime favoritmu.
     """)
 
-elif choice == 'Anime Data':
-    st.subheader('Data List Anime')
+elif choice == '📚 Anime Data':
+    st.subheader('📄 Data List Anime')
     st.dataframe(data)
 
-elif choice == 'Recommendation':
-    st.subheader('Rekomendasi Anime')
+elif choice == '✨ Recommendation':
+    st.subheader('✨ Rekomendasi Anime')
 
     anime_list = data['name'].tolist()
     selected_anime = st.selectbox('Select an Anime', anime_list)
@@ -56,8 +59,15 @@ elif choice == 'Recommendation':
     if st.button('Show Recommendation'):
         recommendations = recommend(selected_anime)
         if len(recommendations) == 0:
-            st.write('Anime tidak ditemukan dalam data.')
+            st.warning('Anime tidak ditemukan dalam data.')
         else:
-            st.write('Recommended Animes:')
+            st.success('Berikut adalah anime rekomendasi untuk kamu:')
             for idx, row in recommendations.iterrows():
-                st.write(f"- {row['name']} (Genre: {row['genre']})")
+                with st.container():
+                    st.markdown(f"""
+                    <div style='background-color:#f0f2f6; padding:15px; border-radius:10px; margin-bottom:10px'>
+                        <h4 style='margin-bottom:5px;'>{row['name']}</h4>
+                        <p style='margin-bottom:5px;'><b>Genre:</b> {row['genre']}</p>
+                        <p><b>Rating:</b> {row['rating']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
